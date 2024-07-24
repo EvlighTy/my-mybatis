@@ -1,5 +1,7 @@
 package cn.evlight.mybatis.test.dao;
 
+import cn.evlight.mybatis.test.po.User;
+
 /**
  * @Description:
  * @Author: evlight
@@ -7,6 +9,6 @@ package cn.evlight.mybatis.test.dao;
  */
 public interface UserDao {
 
-    String getById(Long id);
+    User getById(Long id);
 
 }

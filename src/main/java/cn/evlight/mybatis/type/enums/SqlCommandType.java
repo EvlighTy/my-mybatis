@@ -1,4 +1,4 @@
-package cn.evlight.mybatis.type;
+package cn.evlight.mybatis.type.enums;
 
 /**
  * @Description:

@@ -3,7 +3,7 @@ package cn.evlight.mybatis.bind;
 import cn.evlight.mybatis.mapping.MappedStatement;
 import cn.evlight.mybatis.session.Configuration;
 import cn.evlight.mybatis.session.SqlSession;
-import cn.evlight.mybatis.type.SqlCommandType;
+import cn.evlight.mybatis.type.enums.SqlCommandType;
 
 import java.lang.reflect.Method;
 
