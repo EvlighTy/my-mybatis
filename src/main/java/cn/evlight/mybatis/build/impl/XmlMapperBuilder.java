@@ -1,10 +1,13 @@
 package cn.evlight.mybatis.build.impl;
 
 import cn.evlight.mybatis.build.BaseMapperBuilder;
+import cn.evlight.mybatis.datasource.DatasourceFactory;
 import cn.evlight.mybatis.io.Resources;
+import cn.evlight.mybatis.mapping.BoundSql;
+import cn.evlight.mybatis.mapping.Environment;
 import cn.evlight.mybatis.mapping.MappedStatement;
 import cn.evlight.mybatis.session.Configuration;
-import cn.evlight.mybatis.type.SqlCommandType;
+import cn.evlight.mybatis.type.enums.SqlCommandType;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -15,6 +18,7 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +38,36 @@ public class XmlMapperBuilder extends BaseMapperBuilder {
     }
 
     public Configuration parseToConfiguration() {
+        parseMappers();
+        parseEnvironment();
+        return configuration;
+    }
+
+    private void parseEnvironment() {
+        try {
+            Element environments = root.element("environments");
+            String environmentId = environments.attributeValue("default");
+            List<Element> environmentList = environments.elements("environment");
+            for (Element environment : environmentList) {
+                String id = environment.attributeValue("id");
+                if (environmentId.equals(id)) {
+                    Element dataSource = environment.element("dataSource");
+                    DatasourceFactory datasourceFactory = (DatasourceFactory) typeAliasRegistry.resolve(dataSource.attributeValue("type")).newInstance();
+                    Properties properties = new Properties();
+                    List<Element> props = dataSource.elements("property");
+                    for (Element prop : props) {
+                        properties.setProperty(prop.attributeValue("name"), prop.attributeValue("value"));
+                    }
+                    datasourceFactory.setProperties(properties);
+                    configuration.setEnvironment(new Environment(environmentId, datasourceFactory, datasourceFactory.getDatasource()));
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("error parse environment cause:" + e, e);
+        }
+    }
+
+    private void parseMappers() {
         try {
             Element mappers = root.element("mappers");
             List<Element> mapperList = mappers.elements("mapper");
@@ -61,19 +95,15 @@ public class XmlMapperBuilder extends BaseMapperBuilder {
                     String mappedStatementId = namespace + "." + id;
                     configuration.addMappedStatement(MappedStatement.builder()
                             .id(mappedStatementId)
-                            .parameters(parameters)
-                            .parameterType(parameterType)
-                            .sql(sql)
                             .sqlCommandType(SqlCommandType.valueOf(node.getName().toUpperCase(Locale.ENGLISH)))
-                            .resultType(resultType)
+                            .boundSql(new BoundSql(sql, parameterType, parameters, resultType))
                             .build());
                 }
                 configuration.addMapper(Class.forName(namespace));
             }
         } catch (Exception e) {
-            throw new RuntimeException("error parsing xml mapper:" + e, e);
+            throw new RuntimeException("error parsing mappers cause:" + e, e);
         }
-        return configuration;
     }
 
 }

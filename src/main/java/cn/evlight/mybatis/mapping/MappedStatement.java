@@ -1,8 +1,6 @@
 package cn.evlight.mybatis.mapping;
 
-import cn.evlight.mybatis.type.SqlCommandType;
-
-import java.util.Map;
+import cn.evlight.mybatis.type.enums.SqlCommandType;
 
 /**
  * @Description:
@@ -12,19 +10,13 @@ import java.util.Map;
 public class MappedStatement {
 
     private String id;
-    private String sql;
     private SqlCommandType sqlCommandType;
-    private String parameterType;
-    private Map<Integer, String> parameters;
-    private String resultType;
+    private BoundSql boundSql;
 
     private MappedStatement(Builder builder) {
         this.id = builder.id;
         this.sqlCommandType = builder.sqlCommandType;
-        this.parameterType = builder.parameterType;
-        this.parameters = builder.parameters;
-        this.resultType = builder.resultType;
-        this.sql = builder.sql;
+        this.boundSql = builder.boundSql;
     }
 
     public String getId() {
@@ -35,29 +27,14 @@ public class MappedStatement {
         return sqlCommandType;
     }
 
-    public String getParameterType() {
-        return parameterType;
-    }
-
-    public Map<Integer, String> getParameters() {
-        return parameters;
-    }
-
-    public String getResultType() {
-        return resultType;
-    }
-
-    public String getSql() {
-        return sql;
+    public BoundSql getBoundSql() {
+        return boundSql;
     }
 
     public static class Builder {
         private String id;
         private SqlCommandType sqlCommandType;
-        private String parameterType;
-        private Map<Integer, String> parameters;
-        private String resultType;
-        private String sql;
+        private BoundSql boundSql;
 
         public Builder id(String id) {
             this.id = id;
@@ -69,23 +46,8 @@ public class MappedStatement {
             return this;
         }
 
-        public Builder parameterType(String parameterType) {
-            this.parameterType = parameterType;
-            return this;
-        }
-
-        public Builder parameters(Map<Integer, String> parameter) {
-            this.parameters = parameter;
-            return this;
-        }
-
-        public Builder resultType(String resultType) {
-            this.resultType = resultType;
-            return this;
-        }
-
-        public Builder sql(String sql) {
-            this.sql = sql;
+        public Builder boundSql(BoundSql boundSql) {
+            this.boundSql = boundSql;
             return this;
         }
 

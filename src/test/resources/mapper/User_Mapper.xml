@@ -3,7 +3,7 @@
 <mapper namespace="cn.evlight.mybatis.test.dao.UserDao">
 
     <select id="getById" parameterType="java.lang.Long" resultType="cn.evlight.mybatis.test.po.User">
-        SELECT id, userId, userHead, createTime
+        SELECT id, userId, createTime, updateTime
         FROM user
         where id = #{id}
     </select>

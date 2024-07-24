@@ -5,6 +5,8 @@ import cn.evlight.mybatis.session.SqlSession;
 import cn.evlight.mybatis.session.SqlSessionFactory;
 import cn.evlight.mybatis.session.defaults.DefaultSqlSessionFactoryBuilder;
 import cn.evlight.mybatis.test.dao.UserDao;
+import cn.evlight.mybatis.test.po.User;
+import com.alibaba.fastjson.JSON;
 import org.dom4j.DocumentException;
 
 import java.io.Reader;
@@ -20,7 +22,7 @@ public class ApiTest {
         SqlSessionFactory sqlSessionFactory = new DefaultSqlSessionFactoryBuilder().build(reader);
         SqlSession sqlSession = sqlSessionFactory.openSession();
         UserDao userDao = sqlSession.getMapper(UserDao.class);
-        String result = userDao.getById(123L);
-        System.err.println(result);
+        User result = userDao.getById(1L);
+        System.err.println(JSON.toJSONString(result));
     }
 }
