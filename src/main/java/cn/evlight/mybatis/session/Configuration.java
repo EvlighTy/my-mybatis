@@ -2,6 +2,8 @@ package cn.evlight.mybatis.session;
 
 import cn.evlight.mybatis.bind.MapperRegistry;
 import cn.evlight.mybatis.datasource.druid.DruidDatasourceFactory;
+import cn.evlight.mybatis.datasource.pooled.PooledDataSourceFactory;
+import cn.evlight.mybatis.datasource.unpooled.UnPooledDataSourceFactory;
 import cn.evlight.mybatis.mapping.Environment;
 import cn.evlight.mybatis.mapping.MappedStatement;
 import cn.evlight.mybatis.type.TypeAliasRegistry;
@@ -22,7 +24,9 @@ public class Configuration {
     private final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
 
     {
-        typeAliasRegistry.register("Druid", DruidDatasourceFactory.class);
+        typeAliasRegistry.register("druid", DruidDatasourceFactory.class);
+        typeAliasRegistry.register("unpooled", UnPooledDataSourceFactory.class);
+        typeAliasRegistry.register("pooled", PooledDataSourceFactory.class);
     }
 
     public TypeAliasRegistry getTypeAliasRegistry() {

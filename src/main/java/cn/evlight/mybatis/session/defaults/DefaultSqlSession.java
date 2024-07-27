@@ -41,7 +41,7 @@ public class DefaultSqlSession implements SqlSession {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<T> result = resultSet2Obj(resultSet, Class.forName(mappedStatement.getBoundSql().getResultType()));
             if (result.isEmpty()) {
-                return (T) "not find";
+                return (T) ("data can not find from database for sql:" + mappedStatement.getBoundSql().getSql());
             }
             return result.get(0);
         } catch (Exception e) {
