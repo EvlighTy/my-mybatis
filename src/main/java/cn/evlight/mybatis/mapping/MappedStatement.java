@@ -1,5 +1,6 @@
 package cn.evlight.mybatis.mapping;
 
+import cn.evlight.mybatis.session.Configuration;
 import cn.evlight.mybatis.type.enums.SqlCommandType;
 
 /**
@@ -9,11 +10,13 @@ import cn.evlight.mybatis.type.enums.SqlCommandType;
  */
 public class MappedStatement {
 
+    private Configuration configuration;
     private String id;
     private SqlCommandType sqlCommandType;
     private BoundSql boundSql;
 
     private MappedStatement(Builder builder) {
+        this.configuration = builder.configuration;
         this.id = builder.id;
         this.sqlCommandType = builder.sqlCommandType;
         this.boundSql = builder.boundSql;
@@ -31,7 +34,13 @@ public class MappedStatement {
         return boundSql;
     }
 
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
     public static class Builder {
+
+        private Configuration configuration;
         private String id;
         private SqlCommandType sqlCommandType;
         private BoundSql boundSql;
@@ -48,6 +57,11 @@ public class MappedStatement {
 
         public Builder boundSql(BoundSql boundSql) {
             this.boundSql = boundSql;
+            return this;
+        }
+
+        public Builder configuration(Configuration configuration) {
+            this.configuration = configuration;
             return this;
         }
 

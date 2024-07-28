@@ -7,6 +7,7 @@ import cn.evlight.mybatis.mapping.BoundSql;
 import cn.evlight.mybatis.mapping.Environment;
 import cn.evlight.mybatis.mapping.MappedStatement;
 import cn.evlight.mybatis.session.Configuration;
+import cn.evlight.mybatis.transaction.TransactionFactory;
 import cn.evlight.mybatis.type.enums.SqlCommandType;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -51,15 +52,20 @@ public class XmlMapperBuilder extends BaseMapperBuilder {
             for (Element environment : environmentList) {
                 String id = environment.attributeValue("id");
                 if (environmentId.equals(id)) {
+                    //事务管理器
+                    Element transactionManager = environment.element("transactionManager");
+                    TransactionFactory transactionFactory = (TransactionFactory) typeAliasRegistry.resolve(transactionManager.attributeValue("type")).newInstance();
+                    //数据源
                     Element dataSource = environment.element("dataSource");
                     DatasourceFactory datasourceFactory = (DatasourceFactory) typeAliasRegistry.resolve(dataSource.attributeValue("type")).newInstance();
+                    //数据源配置
                     Properties properties = new Properties();
                     List<Element> props = dataSource.elements("property");
                     for (Element prop : props) {
                         properties.setProperty(prop.attributeValue("name"), prop.attributeValue("value"));
                     }
                     datasourceFactory.setProperties(properties);
-                    configuration.setEnvironment(new Environment(environmentId, datasourceFactory, datasourceFactory.getDatasource()));
+                    configuration.setEnvironment(new Environment(environmentId, datasourceFactory.getDatasource(), transactionFactory));
                 }
             }
         } catch (Exception e) {
@@ -97,6 +103,7 @@ public class XmlMapperBuilder extends BaseMapperBuilder {
                             .id(mappedStatementId)
                             .sqlCommandType(SqlCommandType.valueOf(node.getName().toUpperCase(Locale.ENGLISH)))
                             .boundSql(new BoundSql(sql, parameterType, parameters, resultType))
+                            .configuration(configuration)
                             .build());
                 }
                 configuration.addMapper(Class.forName(namespace));
